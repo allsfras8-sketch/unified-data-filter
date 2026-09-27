@@ -230,6 +230,13 @@ function JournalPage() {
         }
       />
 
+      <DataFilters
+        filters={filters}
+        onChange={setFilters}
+        facets={facets}
+        searchPlaceholder="بحث برقم القيد أو البيان..."
+      />
+
       <div className="print-area overflow-x-auto rounded-lg border bg-card">
         <table className="w-full text-sm">
           <thead className="bg-secondary">
