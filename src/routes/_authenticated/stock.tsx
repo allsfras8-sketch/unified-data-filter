@@ -12,6 +12,8 @@ function StockPage() {
       title="حركات المخزون"
       subtitle="النظام يمنع أي إخراج يؤدي إلى مخزون سالب"
       orderBy="move_date"
+      dateKey="move_date"
+      facetKeys={["direction", "warehouse_id", "product_id", "project_id", "partner_id"]}
       fields={[
         { key: "move_date", label: "التاريخ", type: "date", required: true, defaultValue: today() },
         { key: "product_id", label: "المادة", type: "ref", refTable: "products", required: true },

@@ -14,6 +14,7 @@ function PartnersPage() {
       subtitle="اضغط على أيقونة الكشف لعرض كشف حساب مفصّل مع الرصيد المتحرك. البطاقات ذات القيود لا تُحذف بل تُجمّد"
       orderBy="name"
       ascending
+      facetKeys={["partner_type", "account_id"]}
       extraRowAction={(row) => (
         <Button asChild size="icon" variant="ghost" title="كشف حساب">
           <Link to="/statement/$partnerId" params={{ partnerId: row.id }}>

@@ -14,6 +14,8 @@ function ProjectsPage() {
       subtitle="اضغط على أيقونة التحليل لعرض نسبة الإنجاز ومقارنة الموازنة بالمصاريف والإيرادات. المشاريع ذات الحركات لا تُحذف بل تُجمّد"
       orderBy="name"
       ascending
+      dateKey="start_date"
+      facetKeys={["status", "currency", "client_id"]}
       extraRowAction={(row) => (
         <Button asChild size="icon" variant="ghost" title="تفاصيل المشروع">
           <Link to="/projects/$projectId" params={{ projectId: row.id }}>
