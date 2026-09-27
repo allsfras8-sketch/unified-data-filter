@@ -157,11 +157,37 @@ function JournalPage() {
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const rows = (entries.data ?? []).map((e: any) => ({
+  const allRows = (entries.data ?? []).map((e: any) => ({
     ...e,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     total: (e.journal_lines ?? []).reduce((s: number, l: any) => s + Number(l.debit), 0),
   }));
+
+  const facets: FacetConfig[] = [
+    {
+      key: "currency",
+      label: "العملة",
+      options: [
+        { value: "USD", label: "دولار ($)" },
+        { value: "SYP", label: "ليرة سورية (ل.س)" },
+      ],
+    },
+    {
+      key: "doc_type",
+      label: "المصدر",
+      options: [
+        { value: "sale", label: "فاتورة مبيع" },
+        { value: "purchase", label: "فاتورة شراء" },
+        { value: "receipt", label: "سند قبض" },
+        { value: "payment", label: "سند دفع" },
+        { value: "stock_in", label: "إدخال مستودع" },
+        { value: "stock_out", label: "إخراج إلى مشروع" },
+      ],
+    },
+  ];
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const rows = applyFilters<any>(allRows, filters, { dateKey: "entry_date" });
 
   return (
     <div>
