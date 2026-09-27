@@ -43,6 +43,13 @@
       "when": 1790499430167,
       "tag": "0005_restore_accounts_journal_cheques_assets",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790499489422,
+      "tag": "0006_restore_inventory_projects",
+      "breakpoints": true
     }
   ]
 }
