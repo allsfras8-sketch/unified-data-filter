@@ -54,7 +54,10 @@ function AuditPage() {
     {
       key: "user_id",
       label: "المستخدم",
-      options: Array.from(users.data?.entries() ?? []).map(([id, name]) => ({ value: id, label: name })),
+      options: Array.from(users.data?.entries() ?? []).map(([id, name]) => ({
+        value: String(id),
+        label: String(name),
+      })),
     },
   ];
 

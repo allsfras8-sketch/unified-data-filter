@@ -75,9 +75,9 @@ export function activeFilterCount(f: FilterState) {
 
 type ApplyOptions<T> = {
   /** Row property holding the date used by the date-range engine. */
-  dateKey?: string;
+  dateKey?: string | undefined;
   /** Extra searchable text (e.g. resolved reference names). */
-  searchText?: (row: T) => string;
+  searchText?: ((row: T) => string) | undefined;
 };
 
 export function applyFilters<T extends Record<string, unknown>>(
