@@ -9,12 +9,13 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Download, Printer } from "lucide-react";
+import { DataFilters, applyFilters, useDataFilters, type FacetConfig } from "@/components/DataFilters";
 
 export const Route = createFileRoute("/_authenticated/audit")({ component: AuditPage });
 
 function AuditPage() {
   const { data: me } = useMe();
-  const [search, setSearch] = useState("");
+  const [filters, setFilters] = useDataFilters();
 
   const logs = useQuery({
     queryKey: ["audit_log", me?.tenantId],
@@ -39,10 +40,31 @@ function AuditPage() {
   });
   const userName = (id?: string | null) => (id ? (users.data?.get(id) ?? id) : "—");
 
+  const facets: FacetConfig[] = [
+    {
+      key: "table_name",
+      label: "الجدول",
+      options: Array.from(new Set((logs.data ?? []).map((r: any) => String(r.table_name))))
+        .sort()
+        .map((v) => ({ value: v, label: v })),
+    },
+    {
+      key: "action",
+      label: "العملية",
+      options: ["INSERT", "UPDATE", "DELETE"].map((v) => ({ value: v, label: AUDIT_ACTION_LABEL[v] ?? v })),
+    },
+    {
+      key: "user_id",
+      label: "المستخدم",
+      options: Array.from(users.data?.entries() ?? []).map(([id, name]) => ({ value: id, label: name })),
+    },
+  ];
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const rows = (logs.data ?? []).filter((r: any) =>
-    search ? JSON.stringify(r).toLowerCase().includes(search.toLowerCase()) : true,
-  );
+  const rows = applyFilters<any>(logs.data ?? [], filters, {
+    dateKey: "created_at",
+    searchText: (r) => `${JSON.stringify(r)} ${userName(r.user_id)}`,
+  });
 
   return (
     <div>
@@ -85,9 +107,13 @@ function AuditPage() {
         }
       />
 
-      <div className="no-print mb-3 max-w-xs">
-        <Input placeholder="بحث..." value={search} onChange={(e) => setSearch(e.target.value)} />
-      </div>
+      <DataFilters
+        filters={filters}
+        onChange={setFilters}
+        facets={facets}
+        searchPlaceholder="بحث في سجل الحركات..."
+      />
+
 
       <div className="print-area overflow-x-auto rounded-lg border bg-card">
         <table className="w-full text-sm">
