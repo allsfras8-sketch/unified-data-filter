@@ -36,6 +36,13 @@
       "when": 1790499368685,
       "tag": "0004_restore_core_tenants_profiles_audit",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790499430167,
+      "tag": "0005_restore_accounts_journal_cheques_assets",
+      "breakpoints": true
     }
   ]
 }

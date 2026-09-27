@@ -1386,6 +1386,7 @@ export type Database = {
         Returns: boolean
       }
       is_super_admin: { Args: never; Returns: boolean }
+      next_entry_no: { Args: { _tenant: string }; Returns: number }
       post_document: { Args: { _id: string }; Returns: string }
       tenant_active: { Args: never; Returns: boolean }
       unpost_document: { Args: { _id: string }; Returns: undefined }
