@@ -93,7 +93,7 @@ export function CrudPage(props: Props) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [form, setForm] = useState<Record<string, any>>({});
   const [toDelete, setToDelete] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
+  const [filters, setFilters] = useDataFilters();
 
   // Every read is explicitly scoped to the active company on top of RLS.
   const tenantId = me?.tenantId ?? null;
@@ -202,11 +202,24 @@ export function CrudPage(props: Props) {
   }
 
   const tableFields = fields.filter((f) => !f.hideInTable);
-  const rows = (rowsQuery.data ?? []).filter((r: Record<string, unknown>) =>
-    search
-      ? tableFields.some((f) => String(cellValue(f, r, refMaps)).toLowerCase().includes(search.toLowerCase()))
-      : true,
-  );
+
+  // Contextual facets are derived from the field definitions of this view.
+  const facetConfigs: FacetConfig[] = (props.facetKeys ?? [])
+    .map((key) => {
+      const f = fields.find((x) => x.key === key);
+      if (!f) return null;
+      const options =
+        f.type === "ref"
+          ? (refQueries.data?.[key] ?? []).map((o) => ({ value: o.value, label: o.label }))
+          : (f.options ?? []).map((o) => ({ value: o.value, label: t(o.label) }));
+      return { key, label: t(f.label), options };
+    })
+    .filter((x): x is FacetConfig => x !== null);
+
+  const rows = applyFilters(rowsQuery.data ?? [], filters, {
+    dateKey: props.dateKey,
+    searchText: (r) => tableFields.map((f) => String(cellValue(f, r, refMaps))).join(" "),
+  });
 
   const allowCreate = can(me as Me, module, "create");
   const allowEdit = can(me as Me, module, "edit");
@@ -256,9 +269,14 @@ export function CrudPage(props: Props) {
         }
       />
 
-      <div className="no-print mb-3 max-w-xs">
-        <Input placeholder={t("بحث...")} value={search} onChange={(e) => setSearch(e.target.value)} />
-      </div>
+      <DataFilters
+        filters={filters}
+        onChange={setFilters}
+        facets={facetConfigs}
+        showDate={!!props.dateKey}
+        searchPlaceholder={t("بحث...")}
+      />
+
 
 
       <div className="print-area overflow-x-auto rounded-lg border bg-card">
