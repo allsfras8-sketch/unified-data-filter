@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { db, scope } from "@/lib/db";
 import { useMe } from "@/lib/session";
@@ -7,7 +6,6 @@ import { exportCsv, printPage } from "@/lib/export";
 import { AUDIT_ACTION_LABEL, fmtDateTime } from "@/lib/format";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Download, Printer } from "lucide-react";
 import { DataFilters, applyFilters, useDataFilters, type FacetConfig } from "@/components/DataFilters";
 
