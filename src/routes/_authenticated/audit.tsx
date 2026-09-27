@@ -42,7 +42,10 @@ function AuditPage() {
     {
       key: "table_name",
       label: "الجدول",
-      options: Array.from(new Set((logs.data ?? []).map((r: any) => String(r.table_name))))
+      options: Array.from(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        new Set<string>((logs.data ?? []).map((r: any) => String(r.table_name))),
+      )
         .sort()
         .map((v) => ({ value: v, label: v })),
     },
