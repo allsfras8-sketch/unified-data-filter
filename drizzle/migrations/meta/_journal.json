@@ -29,6 +29,13 @@
       "when": 1790428448258,
       "tag": "0003_20260926125705_306fce98_dc61_4bf9_9c91_813bddfbc2ee_sql",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790499368685,
+      "tag": "0004_restore_core_tenants_profiles_audit",
+      "breakpoints": true
     }
   ]
 }
