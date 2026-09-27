@@ -12,6 +12,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Download, FileText, Plus, Printer, Trash2 } from "lucide-react";
+import {
+  DataFilters,
+  applyFilters,
+  resolveRange,
+  useDataFilters,
+  type FacetConfig,
+} from "@/components/DataFilters";
 
 export const Route = createFileRoute("/_authenticated/journal")({ component: JournalPage });
 
@@ -45,14 +52,21 @@ function JournalPage() {
   });
   const [lines, setLines] = useState<LineDraft[]>([emptyLine(), emptyLine()]);
 
+  const [filters, setFilters] = useDataFilters();
+  const range = resolveRange(filters);
+
+  // The date range is pushed into the backend query; the rest filters in place.
   const entries = useQuery({
-    queryKey: ["journal_entries", me?.tenantId],
+    queryKey: ["journal_entries", me?.tenantId, range.from, range.to],
     enabled: !!me,
     queryFn: async () => {
-      const { data, error } = await db
+      let q = db
         .from("journal_entries")
         .select("*, journal_lines(debit, credit)")
         .order("entry_no", { ascending: false });
+      if (range.from) q = q.gte("entry_date", range.from);
+      if (range.to) q = q.lte("entry_date", range.to);
+      const { data, error } = await q;
       if (error) throw error;
       return data ?? [];
     },
