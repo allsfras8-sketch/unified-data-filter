@@ -50,6 +50,13 @@
       "when": 1790499489422,
       "tag": "0006_restore_inventory_projects",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1790499599019,
+      "tag": "0007_restore_subscriptions_documents_posting",
+      "breakpoints": true
     }
   ]
 }
