@@ -57,6 +57,13 @@
       "when": 1790499599019,
       "tag": "0007_restore_subscriptions_documents_posting",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1790499645359,
+      "tag": "0008_restore_soft_delete_guards_and_payments",
+      "breakpoints": true
     }
   ]
 }

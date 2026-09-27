@@ -20,6 +20,7 @@ export type Database = {
           created_at: string
           currency: Database["public"]["Enums"]["currency_code"]
           id: string
+          is_active: boolean
           is_group: boolean
           name: string
           nature: Database["public"]["Enums"]["account_nature"]
@@ -32,6 +33,7 @@ export type Database = {
           created_at?: string
           currency?: Database["public"]["Enums"]["currency_code"]
           id?: string
+          is_active?: boolean
           is_group?: boolean
           name: string
           nature?: Database["public"]["Enums"]["account_nature"]
@@ -44,6 +46,7 @@ export type Database = {
           created_at?: string
           currency?: Database["public"]["Enums"]["currency_code"]
           id?: string
+          is_active?: boolean
           is_group?: boolean
           name?: string
           nature?: Database["public"]["Enums"]["account_nature"]
@@ -663,6 +666,7 @@ export type Database = {
           code: string | null
           created_at: string
           id: string
+          is_active: boolean
           name: string
           partner_type: string
           phone: string | null
@@ -674,6 +678,7 @@ export type Database = {
           code?: string | null
           created_at?: string
           id?: string
+          is_active?: boolean
           name: string
           partner_type?: string
           phone?: string | null
@@ -685,6 +690,7 @@ export type Database = {
           code?: string | null
           created_at?: string
           id?: string
+          is_active?: boolean
           name?: string
           partner_type?: string
           phone?: string | null
@@ -716,6 +722,7 @@ export type Database = {
           currency: Database["public"]["Enums"]["currency_code"]
           default_warehouse_id: string | null
           id: string
+          is_active: boolean
           last_purchase_price: number
           name: string
           qty_on_hand: number
@@ -732,6 +739,7 @@ export type Database = {
           currency?: Database["public"]["Enums"]["currency_code"]
           default_warehouse_id?: string | null
           id?: string
+          is_active?: boolean
           last_purchase_price?: number
           name: string
           qty_on_hand?: number
@@ -748,6 +756,7 @@ export type Database = {
           currency?: Database["public"]["Enums"]["currency_code"]
           default_warehouse_id?: string | null
           id?: string
+          is_active?: boolean
           last_purchase_price?: number
           name?: string
           qty_on_hand?: number
@@ -933,6 +942,7 @@ export type Database = {
           currency: Database["public"]["Enums"]["currency_code"]
           end_date: string | null
           id: string
+          is_active: boolean
           name: string
           notes: string | null
           start_date: string | null
@@ -948,6 +958,7 @@ export type Database = {
           currency?: Database["public"]["Enums"]["currency_code"]
           end_date?: string | null
           id?: string
+          is_active?: boolean
           name: string
           notes?: string | null
           start_date?: string | null
@@ -963,6 +974,7 @@ export type Database = {
           currency?: Database["public"]["Enums"]["currency_code"]
           end_date?: string | null
           id?: string
+          is_active?: boolean
           name?: string
           notes?: string | null
           start_date?: string | null
@@ -1150,6 +1162,41 @@ export type Database = {
           },
         ]
       }
+      tenant_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          notes: string | null
+          pay_date: string
+          tenant_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          pay_date?: string
+          tenant_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          pay_date?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_payments_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tenant_settings: {
         Row: {
           cash_account_id: string | null
@@ -1257,6 +1304,7 @@ export type Database = {
           plan: string
           sub_end: string
           sub_start: string
+          subscription_fee: number
         }
         Insert: {
           address?: string | null
@@ -1271,6 +1319,7 @@ export type Database = {
           plan?: string
           sub_end?: string
           sub_start?: string
+          subscription_fee?: number
         }
         Update: {
           address?: string | null
@@ -1285,6 +1334,7 @@ export type Database = {
           plan?: string
           sub_end?: string
           sub_start?: string
+          subscription_fee?: number
         }
         Relationships: []
       }
@@ -1341,6 +1391,7 @@ export type Database = {
           code: string | null
           created_at: string
           id: string
+          is_active: boolean
           location: string | null
           name: string
           tenant_id: string
@@ -1349,6 +1400,7 @@ export type Database = {
           code?: string | null
           created_at?: string
           id?: string
+          is_active?: boolean
           location?: string | null
           name: string
           tenant_id: string
@@ -1357,6 +1409,7 @@ export type Database = {
           code?: string | null
           created_at?: string
           id?: string
+          is_active?: boolean
           location?: string | null
           name?: string
           tenant_id?: string
