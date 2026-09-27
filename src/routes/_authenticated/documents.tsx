@@ -11,6 +11,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, Trash2, CheckCircle2, RotateCcw } from "lucide-react";
+import {
+  DataFilters,
+  applyFilters,
+  resolveRange,
+  useDataFilters,
+  type FacetConfig,
+} from "@/components/DataFilters";
 
 export const Route = createFileRoute("/_authenticated/documents")({ component: DocumentsPage });
 
@@ -46,16 +53,21 @@ function DocumentsPage() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(emptyDoc);
   const [lines, setLines] = useState<Line[]>([{ product_id: "", qty: "1", unit_price: "0" }]);
-  const [filter, setFilter] = useState("all");
+  const [filters, setFilters] = useDataFilters();
+  const range = resolveRange(filters);
+  const typeFilter = filters.facets["doc_type"] ?? [];
 
   const meta = DOC_TYPES.find((d) => d.value === form.doc_type)!;
 
+  // Date range and document types are pushed into the backend query.
   const list = useQuery({
-    queryKey: ["documents", me?.tenantId, filter],
+    queryKey: ["documents", me?.tenantId, typeFilter.join(","), range.from, range.to],
     enabled: !!me?.tenantId,
     queryFn: async () => {
       let q = db.from("documents").select("*").order("doc_date", { ascending: false }).order("doc_no", { ascending: false });
-      if (filter !== "all") q = q.eq("doc_type", filter);
+      if (typeFilter.length > 0) q = q.in("doc_type", typeFilter);
+      if (range.from) q = q.gte("doc_date", range.from);
+      if (range.to) q = q.lte("doc_date", range.to);
       const { data, error } = await q;
       if (error) throw error;
       return data ?? [];
@@ -163,6 +175,44 @@ function DocumentsPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const facets: FacetConfig[] = [
+    { key: "doc_type", label: "نوع المستند", options: DOC_TYPES.map((d) => ({ value: d.value, label: d.label })) },
+    {
+      key: "status",
+      label: "الحالة",
+      options: [
+        { value: "draft", label: "مسودة" },
+        { value: "posted", label: "مرحّل" },
+      ],
+    },
+    {
+      key: "currency",
+      label: "العملة",
+      options: [
+        { value: "USD", label: "دولار ($)" },
+        { value: "SYP", label: "ليرة سورية (ل.س)" },
+      ],
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    { key: "partner_id", label: "الزبون / المورد", options: (ref.data?.partners ?? []).map((p: any) => ({ value: p.id, label: p.name })) },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    { key: "warehouse_id", label: "المستودع", options: (ref.data?.warehouses ?? []).map((w: any) => ({ value: w.id, label: w.name })) },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    { key: "project_id", label: "المشروع", options: (ref.data?.projects ?? []).map((p: any) => ({ value: p.id, label: p.name })) },
+  ];
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const rows = applyFilters<any>(list.data ?? [], filters, {
+    dateKey: "doc_date",
+    searchText: (d) =>
+      [
+        DOC_TYPES.find((t) => t.value === d.doc_type)?.label ?? "",
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (ref.data?.partners ?? []).find((p: any) => p.id === d.partner_id)?.name ?? "",
+        d.status === "posted" ? "مرحّل" : "مسودة",
+      ].join(" "),
+  });
+
   const total = meta.lines
     ? lines.reduce((s, l) => s + (Number(l.qty) || 0) * (Number(l.unit_price) || 0), 0)
     : Number(form.amount) || 0;
@@ -182,23 +232,12 @@ function DocumentsPage() {
         }
       />
 
-      <div className="mb-4 flex flex-wrap gap-2">
-        <button
-          onClick={() => setFilter("all")}
-          className={`rounded-md border px-3 py-1 text-sm ${filter === "all" ? "bg-primary text-primary-foreground" : ""}`}
-        >
-          الكل
-        </button>
-        {DOC_TYPES.map((d) => (
-          <button
-            key={d.value}
-            onClick={() => setFilter(d.value)}
-            className={`rounded-md border px-3 py-1 text-sm ${filter === d.value ? "bg-primary text-primary-foreground" : ""}`}
-          >
-            {d.label}
-          </button>
-        ))}
-      </div>
+      <DataFilters
+        filters={filters}
+        onChange={setFilters}
+        facets={facets}
+        searchPlaceholder="بحث برقم المستند أو الملاحظات..."
+      />
 
       <div className="overflow-x-auto rounded-lg border bg-card">
         <table className="w-full text-sm">
@@ -215,7 +254,7 @@ function DocumentsPage() {
           </thead>
           <tbody>
             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {(list.data ?? []).map((d: any) => (
+            {rows.map((d: any) => (
               <tr key={d.id} className="border-t">
                 <td className="px-3 py-2">{DOC_TYPES.find((t) => t.value === d.doc_type)?.label}</td>
                 <td className="px-3 py-2">{d.doc_no}</td>
@@ -271,7 +310,7 @@ function DocumentsPage() {
                 </td>
               </tr>
             ))}
-            {(list.data ?? []).length === 0 && (
+            {rows.length === 0 && (
               <tr>
                 <td colSpan={7} className="px-3 py-6 text-center text-muted-foreground">
                   لا توجد مستندات
