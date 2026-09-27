@@ -26,6 +26,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Download, Pencil, Plus, Printer, Trash2 } from "lucide-react";
+import {
+  DataFilters,
+  applyFilters,
+  useDataFilters,
+  type FacetConfig,
+} from "@/components/DataFilters";
 
 export type CrudField = {
   key: string;
@@ -56,6 +62,10 @@ type Props = {
   importLookups?: Lookup[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   extraRowAction?: (row: any) => React.ReactNode;
+  /** Field key holding the row date; enables the date-range engine. */
+  dateKey?: string;
+  /** Field keys exposed as multi-select faceted filters. */
+  facetKeys?: string[];
 };
 
 
